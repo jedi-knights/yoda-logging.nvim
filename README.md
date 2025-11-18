@@ -42,35 +42,31 @@ Strategy pattern (console/file/notify/multi), lazy evaluation, level filtering, 
 ## 🚀 Quick Start
 
 ```lua
-local logger = require("yoda-logging")
+local logging = require("yoda-logging")
 
--- Setup (optional, has sensible defaults)
-logger.setup({
-  strategy = "file",  -- "console", "file", "notify", or "multi"
-  level = logger.LEVELS.DEBUG,
+logging.setup({
+  strategy = "file",
+  level = logging.LEVELS.DEBUG,
   file = {
     path = vim.fn.stdpath("data") .. "/my-plugin.log",
-    max_size = 1024 * 1024,  -- 1MB
+    max_size = 1024 * 1024,
     rotate_count = 3,
   },
 })
 
--- Log at different levels
-logger.trace("Very detailed trace")
-logger.debug("Debug information")
-logger.info("General information")
-logger.warn("Warning message")
-logger.error("Error occurred")
+logging.trace("Very detailed trace")
+logging.debug("Debug information")
+logging.info("General information")
+logging.warn("Warning message")
+logging.error("Error occurred")
 
--- Add structured context
-logger.info("User logged in", {
+logging.info("User logged in", {
   user_id = 123,
   session = "abc-def",
   ip = "192.168.1.1",
 })
 
--- Lazy evaluation (only evaluated if logged)
-logger.debug(function()
+logging.debug(function()
   return "Expensive: " .. vim.inspect(huge_table)
 end)
 ```
@@ -84,7 +80,8 @@ end)
 Outputs to console using `print()`. Great for development.
 
 ```lua
-logger.setup({ strategy = "console" })
+local logging = require("yoda-logging")
+logging.setup({ strategy = "console" })
 ```
 
 ### File Strategy
@@ -92,12 +89,13 @@ logger.setup({ strategy = "console" })
 Writes to a log file with automatic rotation.
 
 ```lua
-logger.setup({
+local logging = require("yoda-logging")
+logging.setup({
   strategy = "file",
   file = {
     path = vim.fn.stdpath("log") .. "/yoda.log",
-    max_size = 1024 * 1024,  -- 1MB
-    rotate_count = 3,  -- Keep 3 backups
+    max_size = 1024 * 1024,
+    rotate_count = 3,
   },
 })
 ```
@@ -112,7 +110,8 @@ logger.setup({
 Shows logs as Neovim notifications (via yoda-adapters).
 
 ```lua
-logger.setup({ strategy = "notify" })
+local logging = require("yoda-logging")
+logging.setup({ strategy = "notify" })
 ```
 
 **Requires**: `yoda.nvim-adapters` for best experience (auto-detects noice/snacks, falls back to native).
@@ -122,7 +121,8 @@ logger.setup({ strategy = "notify" })
 Combines console and file output for comprehensive logging.
 
 ```lua
-logger.setup({ strategy = "multi" })
+local logging = require("yoda-logging")
+logging.setup({ strategy = "multi" })
 ```
 
 ---
@@ -132,59 +132,50 @@ logger.setup({ strategy = "multi" })
 ### Log Levels
 
 ```lua
-local logger = require("yoda-logging")
+local logging = require("yoda-logging")
 
-logger.LEVELS.TRACE  -- 0 (most verbose)
-logger.LEVELS.DEBUG  -- 1
-logger.LEVELS.INFO   -- 2
-logger.LEVELS.WARN   -- 3
-logger.LEVELS.ERROR  -- 4 (least verbose)
+logging.LEVELS.TRACE  -- 0 (most verbose)
+logging.LEVELS.DEBUG  -- 1
+logging.LEVELS.INFO   -- 2
+logging.LEVELS.WARN   -- 3
+logging.LEVELS.ERROR  -- 4 (least verbose)
 ```
 
 ### Runtime Configuration
 
 ```lua
--- Change level at runtime
-logger.set_level("debug")  -- or logger.LEVELS.DEBUG
-logger.set_level("warn")
+local logging = require("yoda-logging")
 
--- Change strategy at runtime
-logger.set_strategy("file")
-logger.set_strategy("multi")
+logging.set_level("debug")
+logging.set_level("warn")
 
--- Flush output (ensures writes are committed)
-logger.flush()
+logging.set_strategy("file")
+logging.set_strategy("multi")
 
--- Clear logs (file strategy only)
-logger.clear()
+logging.flush()
+
+logging.clear()
 ```
 
 ### Full Configuration
 
 ```lua
-logger.setup({
-  -- Minimum level to log
-  level = logger.LEVELS.INFO,
-  
-  -- Strategy: "console", "file", "notify", or "multi"
+local logging = require("yoda-logging")
+
+logging.setup({
+  level = logging.LEVELS.INFO,
   strategy = "file",
-  
-  -- File configuration
   file = {
     path = vim.fn.stdpath("log") .. "/yoda.log",
-    max_size = 1024 * 1024,  -- 1MB
+    max_size = 1024 * 1024,
     rotate_count = 3,
   },
-  
-  -- Message formatting
   format = {
     include_timestamp = true,
     include_level = true,
     include_context = true,
     timestamp_format = "%Y-%m-%d %H:%M:%S",
   },
-  
-  -- Performance
   lazy_evaluation = true,
 })
 ```
@@ -222,33 +213,33 @@ logger.setup({
 ### Basic Logging
 
 ```lua
-local logger = require("yoda-logging")
+local logging = require("yoda-logging")
 
-logger.info("Application started")
-logger.debug("Loading configuration")
-logger.warn("Deprecated API used")
-logger.error("Failed to connect to server")
+logging.info("Application started")
+logging.debug("Loading configuration")
+logging.warn("Deprecated API used")
+logging.error("Failed to connect to server")
 ```
 
 ### Structured Context
 
 ```lua
-logger.info("Request processed", {
+local logging = require("yoda-logging")
+
+logging.info("Request processed", {
   method = "GET",
   path = "/api/users",
   status = 200,
   duration_ms = 45,
 })
-
--- Output:
--- [2025-11-17 15:30:45] [INFO] Request processed | method=GET path=/api/users status=200 duration_ms=45
 ```
 
 ### Lazy Evaluation
 
 ```lua
--- Expensive operation only runs if DEBUG level is enabled
-logger.debug(function()
+local logging = require("yoda-logging")
+
+logging.debug(function()
   local expensive_data = compute_expensive_data()
   return "Result: " .. vim.inspect(expensive_data)
 end)
@@ -257,33 +248,31 @@ end)
 ### Plugin Integration
 
 ```lua
--- In your plugin
 local M = {}
-local logger = require("yoda-logging")
+local logging = require("yoda-logging")
 
 function M.setup(opts)
-  logger.setup({
+  logging.setup({
     strategy = opts.log_strategy or "file",
-    level = opts.log_level or logger.LEVELS.INFO,
+    level = opts.log_level or logging.LEVELS.INFO,
     file = {
       path = vim.fn.stdpath("data") .. "/my-plugin.log",
     },
   })
   
-  logger.info("Plugin initialized", { version = "1.0.0" })
+  logging.info("Plugin initialized", { version = "1.0.0" })
 end
 
 function M.do_something()
-  logger.debug("Starting operation")
+  logging.debug("Starting operation")
   
   local ok, err = pcall(function()
-    -- Your code here
   end)
   
   if not ok then
-    logger.error("Operation failed", { error = err })
+    logging.error("Operation failed", { error = err })
   else
-    logger.info("Operation completed")
+    logging.info("Operation completed")
   end
 end
 

@@ -105,15 +105,6 @@ function M.error(msg, context)
   M.log(M.LEVELS.ERROR, msg, context)
 end
 
---- Setup logging with configuration
---- @param opts table|nil Configuration options
-function M.setup(opts)
-  local config = require("yoda-logging.config")
-  if opts then
-    config.update(opts)
-  end
-end
-
 --- Set log level at runtime
 --- @param level number|string Level (number or name like "debug")
 function M.set_level(level)
