@@ -12,6 +12,11 @@ vim.opt.runtimepath:append(root .. "/lua")
 package.path = package.path .. ";" .. root .. "/lua/?.lua"
 package.path = package.path .. ";" .. root .. "/lua/?/init.lua"
 
+-- Add yoda-adapters to runtimepath (sibling directory)
+local parent_dir = vim.fn.fnamemodify(root, ":h")
+local adapters_path = parent_dir .. "/yoda.nvim-adapters"
+vim.opt.runtimepath:append(adapters_path)
+
 -- Minimal Neovim settings for testing
 vim.opt.swapfile = false
 vim.opt.backup = false

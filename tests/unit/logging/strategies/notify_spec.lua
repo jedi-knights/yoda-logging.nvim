@@ -30,7 +30,7 @@ describe("logging.strategies.notify", function()
       end
 
       local mod = ...
-      if mod == "yoda.adapters.notification" then
+      if mod == "yoda-adapters.notification" then
         if _G.adapter_loaded then
           return true, { notify = vim.notify }
         else
