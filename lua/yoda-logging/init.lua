@@ -1,10 +1,18 @@
 local M = {}
 
+local _is_setup = false
+
 function M.setup(opts)
+  if _is_setup then
+    vim.notify("yoda-logging.nvim: setup() called multiple times", vim.log.levels.WARN)
+    return
+  end
+
   local config = require("yoda-logging.config")
   if opts then
     config.update(opts)
   end
+  _is_setup = true
 end
 
 M.trace = function(msg, context)
