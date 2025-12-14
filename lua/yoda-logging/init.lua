@@ -1,6 +1,22 @@
 local M = {}
 
 local _is_setup = false
+local _logger = nil
+local _config = nil
+
+local function get_logger()
+  if not _logger then
+    _logger = require("yoda-logging.logger")
+  end
+  return _logger
+end
+
+local function get_config()
+  if not _config then
+    _config = require("yoda-logging.config")
+  end
+  return _config
+end
 
 function M.setup(opts)
   if _is_setup then
@@ -8,7 +24,7 @@ function M.setup(opts)
     return
   end
 
-  local config = require("yoda-logging.config")
+  local config = get_config()
   if opts then
     config.update(opts)
   end
@@ -16,41 +32,49 @@ function M.setup(opts)
 end
 
 M.trace = function(msg, context)
-  return require("yoda-logging.logger").trace(msg, context)
+  return get_logger().trace(msg, context)
 end
 
 M.debug = function(msg, context)
-  return require("yoda-logging.logger").debug(msg, context)
+  return get_logger().debug(msg, context)
 end
 
 M.info = function(msg, context)
-  return require("yoda-logging.logger").info(msg, context)
+  return get_logger().info(msg, context)
 end
 
 M.warn = function(msg, context)
-  return require("yoda-logging.logger").warn(msg, context)
+  return get_logger().warn(msg, context)
 end
 
 M.error = function(msg, context)
-  return require("yoda-logging.logger").error(msg, context)
+  return get_logger().error(msg, context)
 end
 
 M.set_level = function(level)
-  return require("yoda-logging.logger").set_level(level)
+  return get_logger().set_level(level)
 end
 
 M.set_strategy = function(strategy)
-  return require("yoda-logging.logger").set_strategy(strategy)
+  return get_logger().set_strategy(strategy)
 end
 
 M.flush = function()
-  return require("yoda-logging.logger").flush()
+  return get_logger().flush()
 end
 
 M.clear = function()
-  return require("yoda-logging.logger").clear()
+  return get_logger().clear()
 end
 
-M.LEVELS = require("yoda-logging.config").LEVELS
+setmetatable(M, {
+  __index = function(t, k)
+    if k == "LEVELS" then
+      local levels = get_config().LEVELS
+      rawset(t, k, levels)
+      return levels
+    end
+  end
+})
 
 return M
